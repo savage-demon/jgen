@@ -1,0 +1,31 @@
+# https://taskfile.dev
+
+version: "3"
+
+dotenv: [".env"]
+
+# silent: true
+tasks:
+  default:
+    cmds:
+      - task --list-all
+    silent: true
+
+  build:
+    cmds:
+      - go build .
+
+  lint:
+    cmds:
+      - golangci-lint run -v
+
+  vet:
+    cmds:
+      - go vet ./...
+
+  check:
+    cmds:
+      - task: lint
+      - task: vet
+    aliases:
+      - c
