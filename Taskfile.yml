@@ -33,3 +33,7 @@ tasks:
   local-release:
     cmds:
       - goreleaser build --clean --snapshot
+
+  release:
+    cmds:
+      - goreleaser release --clean
