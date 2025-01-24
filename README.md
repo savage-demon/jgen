@@ -14,7 +14,9 @@ A dynamic test data generator based on JSON templates with placeholder support.
 
 ## Installation
 
-wip...
+```bash
+curl -fsSL https://https://raw.githubusercontent.com/savage-demon/jgen/master/install.sh | bash
+```
 
 ## Usage
 

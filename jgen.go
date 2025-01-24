@@ -276,7 +276,7 @@ func intPow(base, exp int) int {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go <input_schema_file> [-o output_file]")
+		fmt.Println("Usage: jgen <input_schema_file> [-o output_file]")
 		return
 	}
 
