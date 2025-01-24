@@ -1,7 +1,5 @@
 # JSON GENERATOR - jgen
 
----
-
 A dynamic test data generator based on JSON templates with placeholder support.
 
 ## Features
