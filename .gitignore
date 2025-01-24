@@ -2,3 +2,4 @@ templates
 jgen
 out
 dist
+.env
