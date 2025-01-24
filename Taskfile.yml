@@ -29,3 +29,7 @@ tasks:
       - task: vet
     aliases:
       - c
+
+  local-release:
+    cmds:
+      - goreleaser build --clean --snapshot

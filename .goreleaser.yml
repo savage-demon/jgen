@@ -1,0 +1,31 @@
+project_name: jgen
+release:
+  github:
+    owner: savage-demon
+    name: jgen
+
+builds:
+  - id: jgen
+    main: ./jgen.go # Главный файл Go-приложения
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=0
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}"
+    files:
+      - README.md
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
