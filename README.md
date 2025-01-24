@@ -13,7 +13,7 @@ A dynamic test data generator based on JSON templates with placeholder support.
 ## Installation
 
 ```bash
-curl -fsSL https://https://raw.githubusercontent.com/savage-demon/jgen/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/savage-demon/jgen/master/install.sh | bash
 ```
 
 ## Usage
