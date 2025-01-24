@@ -6,7 +6,7 @@ release:
 
 builds:
   - id: jgen
-    main: ./jgen.go # Главный файл Go-приложения
+    main: ./jgen.go
     goos:
       - linux
       - darwin
@@ -19,7 +19,7 @@ builds:
 
 archives:
   - format: tar.gz
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}"
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
 
