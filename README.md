@@ -24,122 +24,255 @@ jgen input.json [-o output.json]
 
 ## Supported Placeholders
 
-| Placeholder | Parameters                 | Example                                                 |
-| ----------- | -------------------------- | ------------------------------------------------------- |
-| `{index}`   | Padding length (optional)  | `{index:3}` → "001"                                     |
-| `{uuid}`    | -                          | Generates UUID v4                                       |
-| `{date}`    | Format (default: %Y-%m-%d) | `{date:%d/%m/%Y}` → "15/05/2023"                        |
-| `{rdate}`   | Format, start, end         | `{rdate:%Y-%m,2020-01-01 15:20:00,2023-12-31 23:59:59}` |
-| `{email}`   | -                          | `{email}` → "Fb3oq@example.com"                         |
-| `{phone}`   | -                          | `{phone}` → "+7 (999) 999-99-99"                        |
-| `{name}`    | -                          | `{name}` → "MR John Doe"                                |
-| `{fname}`   | -                          | `{fname}` → "John"                                      |
-| `{lname}`   | -                          | `{lname}` → "Doe"                                       |
-| `{address}` | -                          | `{address}` → "123 Main St"                             |
-| `{int}`     | min, max                   | `{int:1,100}` → "42"                                    |
-| `{float}`   | min, max                   | `{float:0,1}` → "0.75"                                  |
-| `{ichar}`   | Number length              | `{ichar:3}` → "456"                                     |
-| `{oneof}`   | Enum name                  | `{oneof:statues}` → "quisquam3"                         |
-| `{bool}`    | -                          | `{bool}` → "true"                                       |
-| `{char}`    | Length                     | `{char:8}` → "6FFmxtWH"                                 |
+| Placeholder | Parameters                | Example                                            |
+| ----------- | ------------------------- | -------------------------------------------------- |
+| `{index}`   | Padding length (optional) | `{index:3}` → "001"                                |
+| `{uuid}`    | -                         | "91ca6d4e-5376-4a09-8576-967381e234fe"             |
+| `{word}`    | -                         | "minima"                                           |
+| `{fname}`   | -                         | "John"                                             |
+| `{lname}`   | -                         | "Doe"                                              |
+| `{name}`    | -                         | "Mr. John Doe"                                     |
+| `{address}` | -                         | "122 Coral Drive"                                  |
+| `{phone}`   | -                         | "104-259-3681"                                     |
+| `{email}`   | -                         | "hZsWIas@jLgKVxW.top"                              |
+| `{char}`    | Length (optional)         | `{char:15}` → "JCUpmMeTa1IK7P4"                    |
+| `{achar}`   | Length (optional)         | `{achar:15}` → "rpilyErHLNwdPtm"                   |
+| `{ichar}`   | Length (optional)         | `{ichar:15}` → "594171701512527"                   |
+| `{int}`     | Range (optional)          | `{int:0,100}` → "47"                               |
+| `{float}`   | Range (optional)          | `{float:0,10}` → "3.34"                            |
+| `{bool}`    | -                         | `{bool}` → "true"                                  |
+| `{date}`    | Format                    | `{date:%d.%m.%Y %H:%M:%S}` → "31.01.2025 19:54:12" |
+| `{rdate}`   | -                         | `{rdate}` → "2025-09-01 05:19:49"                  |
 
 ### Example Input (input.json)
 
 ```json
-{
-  "statuslist": [
-    { "count": 5 },
-    {
-      "status": "{word}{index}!{enum:statues}"
-    }
-  ],
-  "products": [
-    {
-      "count": 2
-    },
-    {
-      "id": "{uuid}",
-      "index": "{index}",
-      "name": "{word}-{word}-{int:100-999}",
-      "sku": "SKU-{index:4}",
-      "status": "{oneof:statues}",
-      "dates": {
-        "random": "{rdate}",
-        "random with format": "{rdate:%Y-%m-%d %H:%M:%S}",
-        "random with format and range": "{rdate:%Y-%m-%d %H:%M:%S,2025-01-01 00:00:00,2025-01-31 23:59:59}",
-        "now with format": "{date:%Y-%m-%d %H:%M:%S}",
-        "now": "{date}"
+[
+  {
+    "Description": "This is the basic usage of the generator",
+    "index": "{index}",
+    "index lpad": "{index:5}",
+    "current date": "{date}",
+    "current date with mask": "{date:%d.%m.%Y %H:%M:%S}",
+    "random date": "{rdate}",
+    "random date with mask": "{rdate:%d.%m.%Y %H:%M:%S}",
+    "random date with mask from to": "{rdate:%d.%m.%Y %H:%M:%S,2025-01-01 00:00:00,2025-01-31 23:59:59}",
+    "uuid": "{uuid}",
+    "word": "{word}",
+    "first name": "{fname}",
+    "last name": "{lname}",
+    "full name": "{name}",
+    "address": "{address}",
+    "phone": "{phone}",
+    "email": "{email}",
+    "string of letters": "{achar:15}",
+    "string of numbers": "{ichar:15}",
+    "string of letters and numbers": "{char:15}",
+    "int": "{int:0,100}",
+    "int for real": "{int:0,100}:to_int",
+    "float": "{float:0,10}",
+    "float for real": "{float:0,10}:to_float",
+    "bool": "{bool}",
+    "bool for real": "{bool}:to_bool"
+  },
+
+  {
+    "Generator with a '!count' flag": [
+      {
+        "!count": 5,
+        "description": "next array element will be generated 5 times",
+        "I will never appear in the output": "because of '!count' key"
       },
-      "names": {
-        "full_name": "{name}",
-        "first_name": "{fname}",
-        "last_name": "{lname}"
+      {
+        "number": "{index}",
+        "I am being duplicated": "5 times"
       }
-    }
-  ]
-}
+    ]
+  },
+
+  {
+    "Description": "In case you want to generate some enumerations that shouldn't end up in the output file.",
+    "Then use the exclude flag": [
+      {
+        "!exclude": 2
+      },
+      {
+        "I will never appear in the output": "because of previous !exclude object"
+      },
+      {
+        "I will never appear in the output": "because of previous !exclude object"
+      },
+      {
+        "I'm 3rd after exclude 2, so I will appear": "in the output"
+      }
+    ]
+  },
+
+  { "!exclude": 1 },
+  {
+    "Description": "Enumerations should be described before they are used",
+    "action": {
+      "1": "talk!{enum:act}",
+      "3": "play!{enum:act}",
+      "5": "help!{enum:act}",
+      "6": "laugh!{enum:act}"
+    },
+    "names": [
+      { "!count": 10 },
+      {
+        "c": "{fname}!{enum:name}"
+      }
+    ]
+  },
+  {
+    "Script": [
+      { "!count": 5 },
+      {
+        "action_number": "{index}",
+        "first_actor": "{oneof:name}",
+        "second_actor": "{oneof:name}",
+        "action": "{oneof:act}"
+      }
+    ],
+
+    "fee for all actors": [
+      { "!count": 10 },
+      {
+        "action": "{each:name} gets a fee of ${int:50,100} for '{oneof:act}ing'"
+      }
+    ]
+  }
+]
 ```
 
 ### Example Output (output.json)
 
 ```json
-{
-  "products": [
-    {
-      "dates": {
-        "now": "2025-01-24 08:45:51",
-        "now with format": "2025-01-24 08:45:51",
-        "random": "2025-05-05 23:19:42",
-        "random with format": "2025-05-19 03:53:11",
-        "random with format and range": "2025-01-11 10:10:05"
+[
+  {
+    "Description": "This is the basic usage of the generator",
+    "address": "163 Highwood Drive",
+    "bool": "false",
+    "bool for real": true,
+    "current date": "2025-01-31 20:03:53",
+    "current date with mask": "31.01.2025 20:03:53",
+    "email": "SwMmtok@TXggJCo.biz",
+    "first name": "Ahmed",
+    "float": "5.59",
+    "float for real": 9.43,
+    "full name": "Lady Verona Hettinger",
+    "index": "1",
+    "index lpad": "00001",
+    "int": "3",
+    "int for real": 37,
+    "last name": "Kilback",
+    "phone": "110-826-4375",
+    "random date": "2025-10-21 20:47:29",
+    "random date with mask": "21.01.2026 03:43:15",
+    "random date with mask from to": "13.01.2025 05:15:37",
+    "string of letters": "oOKFlLKtgYhCNBw",
+    "string of letters and numbers": "49WFe0Z3gNaHq1a",
+    "string of numbers": "729795246287984",
+    "uuid": "72589fef-66c1-4978-957d-7f711abd5c14",
+    "word": "et"
+  },
+  {
+    "Generator with a '!count' flag": [
+      {
+        "I am being duplicated": "5 times",
+        "number": "1"
       },
-      "id": "268692d0-6d30-4e89-a31f-fea04544364b",
-      "index": "1",
-      "name": "fugiat-unde-417",
-      "names": {
-        "first_name": "Cade",
-        "full_name": "Dr. Allison Corkery",
-        "last_name": "Keebler"
+      {
+        "I am being duplicated": "5 times",
+        "number": "2"
       },
-      "sku": "SKU-0001",
-      "status": "quisquam3"
-    },
-    {
-      "dates": {
-        "now": "2025-01-24 08:45:51",
-        "now with format": "2025-01-24 08:45:51",
-        "random": "2025-10-03 11:55:31",
-        "random with format": "2025-02-25 05:27:18",
-        "random with format and range": "2025-01-11 05:34:51"
+      {
+        "I am being duplicated": "5 times",
+        "number": "3"
       },
-      "id": "d5995863-5613-4008-aab0-288b44e31c70",
-      "index": "2",
-      "name": "nisi-expedita-438",
-      "names": {
-        "first_name": "Dario",
-        "full_name": "Mrs. Kasey Ritchie",
-        "last_name": "Jakubowski"
+      {
+        "I am being duplicated": "5 times",
+        "number": "4"
       },
-      "sku": "SKU-0002",
-      "status": "nemo5"
-    }
-  ],
-  "statuslist": [
-    {
-      "status": "odio1"
-    },
-    {
-      "status": "id2"
-    },
-    {
-      "status": "quisquam3"
-    },
-    {
-      "status": "beatae4"
-    },
-    {
-      "status": "nemo5"
-    }
-  ]
-}
+      {
+        "I am being duplicated": "5 times",
+        "number": "5"
+      }
+    ]
+  },
+  {
+    "Description": "In case you want to generate some enumerations that shouldn't end up in the output file.",
+    "Then use the exclude flag": [
+      {
+        "I'm 3rd after exclude 2, so I will appear": "in the output"
+      }
+    ]
+  },
+  {
+    "Script": [
+      {
+        "action": "help",
+        "action_number": "1",
+        "first_actor": "Kristopher",
+        "second_actor": "Melba"
+      },
+      {
+        "action": "play",
+        "action_number": "2",
+        "first_actor": "Celine",
+        "second_actor": "Charles"
+      },
+      {
+        "action": "laugh",
+        "action_number": "3",
+        "first_actor": "Celine",
+        "second_actor": "Charles"
+      },
+      {
+        "action": "laugh",
+        "action_number": "4",
+        "first_actor": "Ludwig",
+        "second_actor": "Melba"
+      },
+      {
+        "action": "play",
+        "action_number": "5",
+        "first_actor": "Kristopher",
+        "second_actor": "Melba"
+      }
+    ],
+    "fee for all actors": [
+      {
+        "action": "Britney gets a fee of $99 for 'talking'"
+      },
+      {
+        "action": "Melba gets a fee of $58 for 'helping'"
+      },
+      {
+        "action": "Richard gets a fee of $55 for 'playing'"
+      },
+      {
+        "action": "Kristopher gets a fee of $66 for 'helping'"
+      },
+      {
+        "action": "Ludwig gets a fee of $54 for 'playing'"
+      },
+      {
+        "action": "Celine gets a fee of $86 for 'laughing'"
+      },
+      {
+        "action": "Khalil gets a fee of $55 for 'playing'"
+      },
+      {
+        "action": "Taylor gets a fee of $77 for 'helping'"
+      },
+      {
+        "action": "Charles gets a fee of $78 for 'laughing'"
+      },
+      {
+        "action": "Libbie gets a fee of $80 for 'helping'"
+      }
+    ]
+  }
+]
 ```

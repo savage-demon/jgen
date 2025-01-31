@@ -19,14 +19,34 @@ import (
 
 type Template interface{}
 
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const (
+	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	numberBytes = "0123456789"
+)
 
 var enums map[string][]string
 
-func RandStringBytes(n int) string {
+func RandLetterBytes(n int) string {
 	b := make([]byte, n)
 	for i := range b {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
+
+func RandNumberBytes(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = numberBytes[rand.Intn(len(numberBytes))]
+	}
+	return string(b)
+}
+
+func RandLetterNumberBytes(n int) string {
+	b := make([]byte, n)
+	bytes := letterBytes + numberBytes
+	for i := range b {
+		b[i] = bytes[rand.Intn(len(bytes))]
 	}
 	return string(b)
 }
@@ -39,7 +59,20 @@ func generateData(template Template, parentIndex int) interface{} {
 		for i := 0; i < lenv; i++ {
 			item := v[i]
 			if itemMap, ok := item.(map[string]interface{}); ok {
-				if count, ok := itemMap["count"].(float64); ok {
+				if exclude, ok := itemMap["!exclude"].(float64); ok {
+					var childTemplate Template
+					if i+1 < len(v) {
+						childTemplate = v[i+1]
+					} else {
+						childTemplate = map[string]interface{}{}
+					}
+					for j := 0; j < int(exclude); j++ {
+						generateData(childTemplate, j+1)
+					}
+
+					i = i + int(exclude)
+
+				} else if count, ok := itemMap["!count"].(float64); ok {
 					var childTemplate Template
 					if i+1 < len(v) {
 						childTemplate = v[i+1]
@@ -99,6 +132,10 @@ func parsePlaceholder(placeholder string, index int) string {
 	params := []string{}
 	if len(parts) > 1 {
 		params = strings.Split(parts[1], ",")
+	}
+
+	for i := 0; i < len(params); i++ {
+		params[i] = strings.TrimSpace(params[i])
 	}
 
 	switch phtype {
@@ -194,21 +231,26 @@ func parsePlaceholder(placeholder string, index int) string {
 	case "address":
 		return faker.GetRealAddress().Address
 
-	case "char":
+	case "achar":
 		length := 1
 		if len(params) > 0 {
 			length, _ = strconv.Atoi(params[0])
 		}
-		return RandStringBytes(length)
+		return RandLetterBytes(length)
 
 	case "ichar":
 		length := 1
 		if len(params) > 0 {
 			length, _ = strconv.Atoi(params[0])
 		}
-		min := intPow(10, length)
-		max := intPow(10, length+1)
-		return strconv.Itoa(rand.Intn(max-min) + min)
+		return RandNumberBytes(length)
+
+	case "char":
+		length := 1
+		if len(params) > 0 {
+			length, _ = strconv.Atoi(params[0])
+		}
+		return RandLetterNumberBytes(length)
 
 	case "bool":
 		return strconv.FormatBool(rand.Intn(2) == 1)
@@ -294,14 +336,6 @@ func replaceInString(s string, index int) string {
 	}
 
 	return resultstr
-}
-
-func intPow(base, exp int) int {
-	result := 1
-	for i := 0; i < exp; i++ {
-		result *= base
-	}
-	return result
 }
 
 func main() {
