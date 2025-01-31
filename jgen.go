@@ -214,8 +214,38 @@ func parsePlaceholder(placeholder string, index int) string {
 		return strconv.FormatBool(rand.Intn(2) == 1)
 
 	case "oneof":
-		idx := rand.Intn(len(enums[params[0]]))
-		return enums[params[0]][idx]
+		en, ok := enums[params[0]]
+		if !ok {
+			fmt.Printf("Enum %s not found\n", params[0])
+			return placeholder
+		}
+
+		if len(en) == 0 {
+			fmt.Printf("Enum %s not found\n", params[0])
+			return placeholder
+		}
+
+		idx := rand.Intn(len(en))
+		return en[idx]
+
+	case "each":
+		en, ok := enums[params[0]]
+		if !ok {
+			fmt.Printf("Enum %s not found\n", params[0])
+			return placeholder
+		}
+
+		if len(en) == 0 {
+			fmt.Printf("Enum %s not found\n", params[0])
+			return placeholder
+		}
+
+		if len(en) < index {
+			fmt.Printf("Not enough values in enum '%s' for each element\n", params[0])
+			return placeholder
+		}
+
+		return en[index-1]
 
 	default:
 		return placeholder
@@ -319,5 +349,5 @@ func main() {
 		return
 	}
 
-	fmt.Println("Data generated successfully and saved to", outputFile)
+	fmt.Println("Data generated and saved to", outputFile)
 }
