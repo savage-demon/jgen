@@ -41,4 +41,4 @@ sudo tar -xzf /tmp/$BINARY_NAME.tar.gz -C /usr/local/bin || {
 }
 sudo chmod +x /usr/local/bin/$BINARY_NAME
 
-echo "$BINARY_NAME version $LATEST_VERSION installed successfully!"
+echo "$BINARY_NAME $LATEST_VERSION installed successfully!"
