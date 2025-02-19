@@ -24,7 +24,10 @@ const (
 	numberBytes = "0123456789"
 )
 
-var enums map[string][]string
+var (
+	enums map[string][]string
+	vars  map[string]string
+)
 
 func RandLetterBytes(n int) string {
 	b := make([]byte, n)
@@ -87,14 +90,29 @@ func generateData(template Template, parentIndex int) interface{} {
 				} else {
 					result = append(result, generateData(item, parentIndex))
 				}
+			} else if itemString, ok := item.(string); ok {
+				result = append(result, generateData(itemString, parentIndex))
 			}
 		}
 		return result
 
 	case map[string]interface{}:
 		result := make(map[string]interface{})
+
 		for key, value := range v {
-			result[key] = generateData(value, parentIndex)
+			if strings.HasPrefix(key, "!var:") {
+				v := generateData(value, parentIndex)
+				switch v := v.(type) {
+				case string:
+					setVar(key, v)
+				}
+			}
+		}
+
+		for key, value := range v {
+			if !strings.HasPrefix(key, "!var:") {
+				result[key] = generateData(value, parentIndex)
+			}
 		}
 		return result
 
@@ -289,6 +307,15 @@ func parsePlaceholder(placeholder string, index int) string {
 
 		return en[index-1]
 
+	case "var":
+		v, ok := vars[params[0]]
+		if !ok {
+			fmt.Printf("Variable %s not found\n", params[0])
+			return placeholder
+		}
+
+		return v
+
 	default:
 		return placeholder
 	}
@@ -384,4 +411,18 @@ func main() {
 	}
 
 	fmt.Println("Data generated and saved to", outputFile)
+}
+
+func setVar(k string, v string) {
+	name := strings.Split(k, ":")
+	if len(name) < 2 {
+		fmt.Println("Invalid variable name:", k)
+		return
+	}
+
+	if vars == nil {
+		vars = make(map[string]string)
+	}
+
+	vars[name[1]] = v
 }
